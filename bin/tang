@@ -1,0 +1,80 @@
+#!/usr/bin/env node
+const program = require('commander')
+const shelljs = require('shelljs')
+const chalk = require('chalk')
+const inquirer = require('inquirer')
+const ora = require('ora')
+const download = require('download-git-repo')
+const reactRepo = 'direct:https://github.com/tovinping/webpack4-init-react.git'
+const vueRepo = 'direct:https://github.com/tovinping/webpack4-init-vue.git'
+const actionHandle = {
+  init(opt){
+    inquirer.prompt([
+  {
+    name: 'testName',
+    type: 'input',
+    message: '请输入名字呀',
+    default: 'testName'
+  },{
+    name: 'name',
+    type: 'list',
+    message: '请选择项目类型react|vue',
+    choices: ['react','vue'],
+    default: 'react'
+  },{
+    name: 'like',
+    type: 'checkbox',
+    message: '哈哈哈,这个没有实际意义，测试玩玩',
+    choices: ['苹果','香蕉','橘子']
+  },{
+    name: 'confirm',
+    type: 'confirm',
+    message: '请仔细确认你的选项(没有实际意义)'
+  }]).then(res=> {
+      console.log(res)
+      console.log('params', opt)
+      console.log('try?', program.try)
+      const spinner = ora(`🍺正在下载${res.name}模板...`)
+      spinner.start()
+      const resRepo = res.name === 'react' ? reactRepo : vueRepo
+      download(resRepo, `./${res.name}`, {clone: true}, (err) => {
+        spinner.stop()
+        if (err){
+          console.log(chalk.red(err.message))
+          process.exit(1)
+        }else {
+          console.log(chalk.green('下载成功'))
+          process.exit(0)
+        }
+      })
+    })
+  },
+  test(opt){
+    console.log('结果：测试命令行')
+    console.log('参数：',opt)
+    console.log('选项：', program.try)
+  }
+}
+const catchError = () => {
+  console.log(chalk.red('你输入的指令不存在,请查看说明:'))
+  shelljs.exec('tang -h')
+}
+program.version('0.0.1')
+program.command('init [param]')
+.description('初始化webpackV4项目(react或者vue)')
+.option('t, --test', '这只是一个测试选项')
+.action((env, cmd)=>{
+  const cmdName = cmd._name
+  if (actionHandle[cmdName]) actionHandle[cmdName](env)
+  else {
+    catchError()
+    process.exit(1)
+  }
+})
+program.arguments('<cmd>').action(cmd=>{
+  if (!actionHandle[cmd]) {
+    catchError()
+    process.exit(1)
+  }
+})
+program.parse(process.argv)
