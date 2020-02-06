@@ -1,0 +1,22 @@
+{
+  "name": "my-cli",
+  "version": "1.0.0",
+  "description": "tang-commander-test",
+  "main": "index.js",
+  "bin": {
+    "tang": "./bin/tang"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tangwenping",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "commander": "^4.1.1",
+    "download-git-repo": "^3.0.2",
+    "inquirer": "^7.0.4",
+    "ora": "^4.0.3",
+    "shelljs": "^0.8.3"
+  }
+}
